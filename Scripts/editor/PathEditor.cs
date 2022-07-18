@@ -49,7 +49,9 @@ public class PathEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        _creator.CurrPathIdx = EditorGUILayout.IntSlider("Segment 선분 변경",_creator.CurrPathIdx, 0, _creator.allPaths.Count);
+        
+       // int idx = EditorGUILayout.IntSlider("Segment 선분 변경",_creator.CurrPathIdx, 0, _creator.allPaths.Count-1);
+       // _creator.ChangePath(idx);
         base.OnInspectorGUI();
         
         if (GUILayout.Button("Show IndexNumber (인덱스표시 켜기/끄기)")) //씬뷰에 인덱스표시할건지

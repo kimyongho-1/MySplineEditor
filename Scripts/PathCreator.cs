@@ -23,11 +23,12 @@ public class PathCreator : MonoBehaviour  // 컴포넌트 역할, 점(Paths.cs)의 정보�
     int currIdx;
     
     public int CurrPathIdx { get { return currIdx; } set { currIdx = value; } }
+    public void ChangePath(int idx) { path = allPaths[idx]; }
     private void OnValidate()
     {
         if (allPaths.Count == 0) { return; }
         Debug.Log(allPaths.Count);
-        CurrPathIdx =  0;
+       // path = allPaths[currIdx] ;
     }
     private void Start()
     {
@@ -43,7 +44,6 @@ public class PathCreator : MonoBehaviour  // 컴포넌트 역할, 점(Paths.cs)의 정보�
         allPaths.Clear();
         path = new Paths(transform.position, 10f);
         allPaths.Add(allPaths.Count, path);
-        //allPaths.Add(0,path);
     }
 
     public void AddNewPath(Vector2 mousePos) // 여러개의 패스를 사용할수있도록

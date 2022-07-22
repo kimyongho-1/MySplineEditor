@@ -1,25 +1,45 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
+using Assets.Script.TweenLibrary;
+
+
+[System.Serializable]
+public class EffectElement : IUI_Effect
+{
+    public IEnumerator Execute()
+    {
+        yield break;
+    }
+}
 
 [System.Serializable]
 public class Point //각 점
 {
-    public Vector2 position; //점의 위치
-    public IUI_Effect effect; // 발동할 이펙트이벤트
-    public Point(Vector2 pos, IUI_Effect eff = null) { this.position = pos; this.effect = eff; }
+    
+    [SerializeField]private Vector2 Position; //점의 위치
+    public Vector2 position { get { return this.Position; } set { this.Position = value; } }
+    [SerializeField] List<EffectElement> effect= new List<EffectElement>(); // 발동할 이펙트이벤트
+
+    public Point(Vector2 pos, EffectElement eff = null) { this.position = pos; this.effect.Add(eff); }
+    public void Play()
+    {
+        effect[effect.Count].Execute();
+    }
 }
 
-
 [System.Serializable]
-public class Paths // 데이터(점) 역할, 각 점의 위치와, 점에 관련된 함수가 있음
+public class Paths  // 데이터(점) 역할, 각 점의 위치와, 점에 관련된 함수가 있음
 {
-    [HideInInspector] public List<Point> points;
+    [SerializeField] List<Point> Points;
+    public List<Point> points { get { return this.Points; } }
+   
+    [HideInInspector] public bool isClosed;  
 
-    [HideInInspector] public bool isClosed;
     public Paths(Vector2 center, float interval = 3f)
     {
-        points = new List<Point>()
+        Points = new List<Point>()
         {
            new Point( (center+Vector2.left * interval)),
            new Point( (center+(Vector2.left+Vector2.up)*0.5f )* interval),
@@ -29,7 +49,7 @@ public class Paths // 데이터(점) 역할, 각 점의 위치와, 점에 관련된 함수가 있음
     }
     public Paths(Vector2 pos)
     {
-        points = new List<Point>()
+        Points = new List<Point>()
         {
           new Point(pos+Vector2.left*5f),
             new Point(pos+Vector2.right*5f),

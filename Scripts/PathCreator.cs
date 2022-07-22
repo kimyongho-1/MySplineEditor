@@ -2,11 +2,13 @@ using Assets.Script.TweenLibrary;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-[ExecuteAlways]
+
 public class PathCreator : MonoBehaviour  // ÄÄÆ÷³ÍÆ® ¿ªÇÒ, Á¡(Paths.cs)ÀÇ Á¤º¸¸¦ ²¨³» ¾¸
 {
-    public Paths path;
-    public Dictionary<int, Paths> allPaths = new Dictionary<int, Paths>();
+    [SerializeField] Paths selectedPath;
+    public Paths path { get { return this.selectedPath; } }
+    [SerializeField] List<Paths> allPaths = new List<Paths>();
+    public List<Paths> PathList { get { return allPaths; }  }
     EffectBuilder effect;
     public Transform mover;
     [Header("ÀÌµ¿¼Óµµ")] public float MoveSpeed;
@@ -23,12 +25,7 @@ public class PathCreator : MonoBehaviour  // ÄÄÆ÷³ÍÆ® ¿ªÇÒ, Á¡(Paths.cs)ÀÇ Á¤º¸¸
     int currIdx;
     
     public int CurrPathIdx { get { return currIdx; } set { currIdx = value; } }
-    private void OnValidate()
-    {
-        if (allPaths.Count == 0) { return; }
-        Debug.Log(allPaths.Count);
-        CurrPathIdx =  0;
-    }
+  
     private void Start()
     {
         effect = new EffectBuilder(this);
@@ -37,22 +34,25 @@ public class PathCreator : MonoBehaviour  // ÄÄÆ÷³ÍÆ® ¿ªÇÒ, Á¡(Paths.cs)ÀÇ Á¤º¸¸
         _deleteSensibilty = (path.points[0].position - path.points[1].position).magnitude;
         loop = true;
     }
-
+    private void Update()
+    {
+        Debug.Log(allPaths.Count);
+    }
     public void CreatePath() // ÆÐ½º³ª Ä¿ºê¸¦ »ç¿ëÇÒ ¿ÀºêÁ§Æ®´Â InitÇÔ¼ö¿¡¼­ ÀÌ ÇÔ¼ö¸¦ ½ÇÇà½ÃÅ°¸éµÊ (Utill.GetOrAddComponent())
     {
         allPaths.Clear();
-        path = new Paths(transform.position, 10f);
-        allPaths.Add(allPaths.Count, path);
+        selectedPath = new Paths(transform.position, 10f);
+        allPaths.Add(path);
         //allPaths.Add(0,path);
     }
 
     public void AddNewPath(Vector2 mousePos) // ¿©·¯°³ÀÇ ÆÐ½º¸¦ »ç¿ëÇÒ¼öÀÖµµ·Ï
     {
-        allPaths.Add(allPaths.Count, new Paths(mousePos));
+        allPaths.Add(new Paths(mousePos));
     }
     public void ChangeControlPathIDX(int idx) // µñ¼Å³Ê¸® Å°°ª¿¡ °¢°¢ ¸ÅÇÎµÈ °³º° ÆÐ½ºµéÁß ÀÎÀÚ Å°¹øÈ£²¬·Î Á¢±Ù
     {
-        path = allPaths[idx]; // ÀÌÁ¦ ¼±Ãß°¡ Á¡ »ý¼ºµîµî ÄÁÆ®·ÑÀ» idx¹øÈ£ ÆÐ½º°´Ã¼¿¡¼­ ÇÏ±â·ÎÇÔ
+        selectedPath = allPaths[idx]; // ÀÌÁ¦ ¼±Ãß°¡ Á¡ »ý¼ºµîµî ÄÁÆ®·ÑÀ» idx¹øÈ£ ÆÐ½º°´Ã¼¿¡¼­ ÇÏ±â·ÎÇÔ
     }
 
     public void DoMove()
@@ -97,7 +97,7 @@ public class PathCreator : MonoBehaviour  // ÄÄÆ÷³ÍÆ® ¿ªÇÒ, Á¡(Paths.cs)ÀÇ Á¤º¸¸
 
             }
             // Àç»ýÇÒ ÀÌº¥Æ®ÇÔ¼ö°¡ ÀÖ´Ù¸é ½ÇÇà!
-            if (p[3].effect != null) { p[3].effect.Execute(); }
+           // if (p[3].effect.Count != 0) { p[3].Play(); }
 
             // ÇöÀç ÀÌµ¿ÀÌ ¹«ÇÑ¹Ýº¹»óÅÂÀÎÁö Ã¼Å©
             count = (loop == true) ? (count + 1) % path.NumSegment : count + 1;

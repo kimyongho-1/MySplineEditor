@@ -13,13 +13,12 @@ public class PathEditor : Editor
     Vector2 mousePos;
     bool showIdx = true;
     const float NearSeg = 5f;
-
+    
     private void OnEnable()
     {
-
         _creator = (PathCreator)target; // 대상 오브젝트
-        if (_creator.path == null)
-        { _creator.CreatePath(); } // PathCreator.cs에서 생성함수 실행, 싱글톤처럼 없으면 만들어버리게함
+     //   if (_creator.path == null)
+     //   { _creator.CreatePath(); } // PathCreator.cs에서 생성함수 실행, 싱글톤처럼 없으면 만들어버리게함
 
         _path = _creator.path; // PathCreator.cs 내부에 path멤버변수를 에디터cs에도 연결
 
@@ -36,7 +35,7 @@ public class PathEditor : Editor
         //eventMR.AddItem(new GUIContent("해당 중심점에 이벤트생성"), false, ); 팝업창으로 클릭한 중심점 정보볼수있게?
         // 후에 AddEffect함수실행
     }
-
+    
     private void OnSceneGUI()
     {
         Event gui = Event.current; // Event클래스는 GUI에서만 인식됨
@@ -45,13 +44,21 @@ public class PathEditor : Editor
         Draw();
         _path = _creator.path; // 갈아끼우기
         SceneView.RepaintAll(); // 씬에디터 화면 다시 그리기
+       
     }
-
+    
     public override void OnInspectorGUI()
     {
-        _creator.CurrPathIdx = EditorGUILayout.IntSlider("Segment 선분 변경",_creator.CurrPathIdx, 0, _creator.allPaths.Count);
-        base.OnInspectorGUI();
+        GUILayout.Label("현재 인덱스 : "+_creator.CurrPathIdx);
         
+        _creator.CurrPathIdx = 
+        EditorGUILayout.IntSlider("Segment 선분 변경", _creator.CurrPathIdx, 0, _creator.PathList.Count - 1);
+        if (_creator.PathList.Count > 0) { _creator.ChangeControlPathIDX(_creator.CurrPathIdx); }
+        Debug.Log(_creator.PathList.Count);
+        Debug.Log(_creator.CurrPathIdx);
+       
+       
+        if (GUILayout.Button("EventPanel 열기")) { PathEventWindow.OpenWindow(); }
         if (GUILayout.Button("Show IndexNumber (인덱스표시 켜기/끄기)")) //씬뷰에 인덱스표시할건지
         {
             showIdx = !showIdx;
@@ -76,7 +83,7 @@ public class PathEditor : Editor
         {
             _creator.CancelMove();
         }
-
+        base.OnInspectorGUI();
     }
 
     void Input() // Repaints는 키나 마우스 입력이 될떄 자동으로 된다고함
@@ -174,6 +181,8 @@ public class PathEditor : Editor
     }
     void Draw() // PathCreator컴포넌트를 지닌 객체의 내부 Paths에 접근해, 각점을 모두 그리기
     {
+        if (_creator.PathList.Count <= 0) { return; }
+
         for (int i = 0; i < _path.NumSegment; i++)
         {
             Point[] relatedPoints = _path.GetPointsInSegment(i);

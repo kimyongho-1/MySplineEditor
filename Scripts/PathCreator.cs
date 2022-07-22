@@ -25,7 +25,17 @@ public class PathCreator : MonoBehaviour  // 컴포넌트 역할, 점(Paths.cs)의 정보�
     int currIdx;
     
     public int CurrPathIdx { get { return currIdx; } set { currIdx = value; } }
+<<<<<<< HEAD
   
+=======
+    public void ChangePath(int idx) { path = allPaths[idx]; }
+    private void OnValidate()
+    {
+        if (allPaths.Count == 0) { return; }
+        Debug.Log(allPaths.Count);
+       // path = allPaths[currIdx] ;
+    }
+>>>>>>> 4a757f3f95f3c59f87018b9bcfdb7ab79fcc91f6
     private void Start()
     {
         effect = new EffectBuilder(this);
@@ -41,9 +51,14 @@ public class PathCreator : MonoBehaviour  // 컴포넌트 역할, 점(Paths.cs)의 정보�
     public void CreatePath() // 패스나 커브를 사용할 오브젝트는 Init함수에서 이 함수를 실행시키면됨 (Utill.GetOrAddComponent())
     {
         allPaths.Clear();
+<<<<<<< HEAD
         selectedPath = new Paths(transform.position, 10f);
         allPaths.Add(path);
         //allPaths.Add(0,path);
+=======
+        path = new Paths(transform.position, 10f);
+        allPaths.Add(allPaths.Count, path);
+>>>>>>> 4a757f3f95f3c59f87018b9bcfdb7ab79fcc91f6
     }
 
     public void AddNewPath(Vector2 mousePos) // 여러개의 패스를 사용할수있도록

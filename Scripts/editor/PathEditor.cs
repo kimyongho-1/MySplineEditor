@@ -49,7 +49,14 @@ public class PathEditor : Editor
     
     public override void OnInspectorGUI()
     {
+<<<<<<< HEAD
         GUILayout.Label("현재 인덱스 : "+_creator.CurrPathIdx);
+=======
+        
+       // int idx = EditorGUILayout.IntSlider("Segment 선분 변경",_creator.CurrPathIdx, 0, _creator.allPaths.Count-1);
+       // _creator.ChangePath(idx);
+        base.OnInspectorGUI();
+>>>>>>> 4a757f3f95f3c59f87018b9bcfdb7ab79fcc91f6
         
         _creator.CurrPathIdx = 
         EditorGUILayout.IntSlider("Segment 선분 변경", _creator.CurrPathIdx, 0, _creator.PathList.Count - 1);

@@ -12,13 +12,15 @@ public class PathEditor : Editor
     GenericMenu menuMR,eventMR;
     Vector2 mousePos;
     bool showIdx = true;
+    bool drawAll = false;
     const float NearSeg = 5f;
-    
+    int cacheIDX = 0;
     private void OnEnable()
     {
+
         _creator = (PathCreator)target; // 대상 오브젝트
-     //   if (_creator.path == null)
-     //   { _creator.CreatePath(); } // PathCreator.cs에서 생성함수 실행, 싱글톤처럼 없으면 만들어버리게함
+        if (_creator.path == null && _creator.allPaths == null)
+        { _creator.CreatePath(); } // PathCreator.cs에서 생성함수 실행, 싱글톤처럼 없으면 만들어버리게함
 
         _path = _creator.path; // PathCreator.cs 내부에 path멤버변수를 에디터cs에도 연결
 
@@ -35,37 +37,39 @@ public class PathEditor : Editor
         //eventMR.AddItem(new GUIContent("해당 중심점에 이벤트생성"), false, ); 팝업창으로 클릭한 중심점 정보볼수있게?
         // 후에 AddEffect함수실행
     }
-    
+
     private void OnSceneGUI()
     {
         Event gui = Event.current; // Event클래스는 GUI에서만 인식됨
         mousePos = HandleUtility.GUIPointToWorldRay(gui.mousePosition).origin; // NULL방지하기위해 언제나 마우스위치값 갱신
         Input();
-        Draw();
-        _path = _creator.path; // 갈아끼우기
+        DrawSetting();
+        //Draw();
+        _path = _path = _creator.GetList[cacheIDX];// _creator.path; // 갈아끼우기
         SceneView.RepaintAll(); // 씬에디터 화면 다시 그리기
-       
     }
-    
+
     public override void OnInspectorGUI()
     {
-<<<<<<< HEAD
-        GUILayout.Label("현재 인덱스 : "+_creator.CurrPathIdx);
-=======
+        if (GUILayout.Button("EventWindow 켜기")) { PathWindowEditor.Open(); }
+        drawAll = GUILayout.Toggle(drawAll, "PATHS 전부그리기");
+
+        if (drawAll == false)
+        {
+            if (_creator.Count > 0)
+            {
+                GUILayout.Label($"현재 Pahts 인덱스{_creator.CurrPathIdx}", EditorStyles.boldLabel);
+                cacheIDX =   // 전체 그리기로 넘어갔다 다시 돌아올떄 현재 인덱스 위치 기억하기 위해
+                _creator.CurrPathIdx = EditorGUILayout.IntSlider(cacheIDX, 0, _creator.Count - 1);
+                _creator.ChangeControlPathIDX(_creator.CurrPathIdx);
+            }
+        }
         
-       // int idx = EditorGUILayout.IntSlider("Segment 선분 변경",_creator.CurrPathIdx, 0, _creator.allPaths.Count-1);
-       // _creator.ChangePath(idx);
+        else { GUILayout.Label($"현재 모든 선분 드로잉 실행중", EditorStyles.boldLabel); }
         base.OnInspectorGUI();
->>>>>>> 4a757f3f95f3c59f87018b9bcfdb7ab79fcc91f6
-        
-        _creator.CurrPathIdx = 
-        EditorGUILayout.IntSlider("Segment 선분 변경", _creator.CurrPathIdx, 0, _creator.PathList.Count - 1);
-        if (_creator.PathList.Count > 0) { _creator.ChangeControlPathIDX(_creator.CurrPathIdx); }
-        Debug.Log(_creator.PathList.Count);
-        Debug.Log(_creator.CurrPathIdx);
+
        
-       
-        if (GUILayout.Button("EventPanel 열기")) { PathEventWindow.OpenWindow(); }
+
         if (GUILayout.Button("Show IndexNumber (인덱스표시 켜기/끄기)")) //씬뷰에 인덱스표시할건지
         {
             showIdx = !showIdx;
@@ -90,7 +94,7 @@ public class PathEditor : Editor
         {
             _creator.CancelMove();
         }
-        base.OnInspectorGUI();
+
     }
 
     void Input() // Repaints는 키나 마우스 입력이 될떄 자동으로 된다고함
@@ -186,9 +190,9 @@ public class PathEditor : Editor
     {
        // _path.isAnchorPointArea(mousePos).effect = 
     }
-    void Draw() // PathCreator컴포넌트를 지닌 객체의 내부 Paths에 접근해, 각점을 모두 그리기
+    void Draw(int count) // PathCreator컴포넌트를 지닌 객체의 내부 Paths에 접근해, 각점을 모두 그리기
     {
-        if (_creator.PathList.Count <= 0) { return; }
+        if (_creator.Count <= 0) { return; }
 
         for (int i = 0; i < _path.NumSegment; i++)
         {
@@ -230,10 +234,8 @@ public class PathEditor : Editor
 
             if (showIdx == true)  // 각점 인덱스 씬뷰에 표시 편의위해서
             {
-                // if (i % 3 == 0) { g.normal.textColor = Color.black; }
-                // else { g.normal.textColor = Color.white; }
                 g.normal.textColor = Color.black;
-                g.CalcScreenSize(_path.points[i].position); Handles.Label(_path.points[i].position, $"AllPaths[{_creator.CurrPathIdx.ToString()}] , IDX : [{i}]," +
+                g.CalcScreenSize(_path.points[i].position); Handles.Label(_path.points[i].position, $"AllPaths[{count.ToString()}] , IDX : [{i}]," +
                     $"\n Pos : {_path.points[i].position}", g);
             }
 
@@ -244,6 +246,28 @@ public class PathEditor : Editor
             }
             if ((i + 4) % 3 == 0) { Handles.color = _creator.anchor; } // 각 중심점
             else { Handles.color = _creator.handle; } // 각 핸들점
+        }
+    }
+    void DrawSetting()
+    {
+        // 모든 선분을 그려야하면 ,pathsList 모두
+        if (drawAll == true)
+        {
+            int count = 0;
+
+            while (count < _creator.Count)
+            {
+                _path = _creator.GetList[count];
+                Draw(count); 
+                count++; 
+            }
+        }
+
+        // 단일 선분만 그려야하는경우
+        else
+        {
+            _path = _creator.GetList[cacheIDX]; // 기억해둔 인덱스로 돌아오기
+            Draw(cacheIDX); // 한번만 그리기
         }
     }
     void Empty() { }

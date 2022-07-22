@@ -1,42 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using UnityEngine;
-using Assets.Script.TweenLibrary;
-
-
-[System.Serializable]
-public class EffectElement : IUI_Effect
-{
-    public IEnumerator Execute()
-    {
-        yield break;
-    }
-}
 
 [System.Serializable]
 public class Point //각 점
 {
-    
-    [SerializeField]private Vector2 Position; //점의 위치
-    public Vector2 position { get { return this.Position; } set { this.Position = value; } }
-    [SerializeField] List<EffectElement> effect= new List<EffectElement>(); // 발동할 이펙트이벤트
-
-    public Point(Vector2 pos, EffectElement eff = null) { this.position = pos; this.effect.Add(eff); }
-    public void Play()
-    {
-        effect[effect.Count].Execute();
-    }
+    [SerializeField] Vector2 Position; //점의 위치
+    public Vector2 position { get { return this.Position; } set { Position = value; } }
+    public Point(Vector2 pos) { position = pos;  }
 }
 
+
 [System.Serializable]
-public class Paths  // 데이터(점) 역할, 각 점의 위치와, 점에 관련된 함수가 있음
+public class Paths // 데이터(점) 역할, 각 점의 위치와, 점에 관련된 함수가 있음
 {
     [SerializeField] List<Point> Points;
-    public List<Point> points { get { return this.Points; } }
-   
-    [HideInInspector] public bool isClosed;  
-
+    public List<Point> points { get { return  Points; } }
+    [HideInInspector] public bool isClosed;
     public Paths(Vector2 center, float interval = 3f)
     {
         Points = new List<Point>()
@@ -60,7 +40,7 @@ public class Paths  // 데이터(점) 역할, 각 점의 위치와, 점에 관련된 함수가 있음
     }
 
     public Vector2 this[int i]  // 인덱스, 개별점의 위치값 접근프로퍼티
-    { get { return points[i].position; } }
+    { get { return Points[i].position; } }
 
     public int NumPoints { get { return points.Count; } }
 

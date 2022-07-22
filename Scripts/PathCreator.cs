@@ -2,13 +2,16 @@ using Assets.Script.TweenLibrary;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+[ExecuteAlways]
 public class PathCreator : MonoBehaviour  // 컴포넌트 역할, 점(Paths.cs)의 정보를 꺼내 씀
 {
-    [SerializeField] Paths selectedPath;
-    public Paths path { get { return this.selectedPath; } }
-    [SerializeField] List<Paths> allPaths = new List<Paths>();
-    public List<Paths> PathList { get { return allPaths; }  }
+    [HideInInspector] [SerializeField] Paths Path;
+    public Paths path { get { return this.Path;} set { this.Path = value; } }
+   [HideInInspector][SerializeField] List<Paths> pathsList = new List<Paths>();
+    public Paths allPaths { get { return pathsList[pathsList.Count]; } set { pathsList.Add(value); } }
+    public List<Paths> GetList { get { return this.pathsList; } }
+    public int Count { get { return pathsList.Count; } }
+    
     EffectBuilder effect;
     public Transform mover;
     [Header("이동속도")] public float MoveSpeed;
@@ -25,49 +28,31 @@ public class PathCreator : MonoBehaviour  // 컴포넌트 역할, 점(Paths.cs)의 정보�
     int currIdx;
     
     public int CurrPathIdx { get { return currIdx; } set { currIdx = value; } }
-<<<<<<< HEAD
   
-=======
-    public void ChangePath(int idx) { path = allPaths[idx]; }
-    private void OnValidate()
-    {
-        if (allPaths.Count == 0) { return; }
-        Debug.Log(allPaths.Count);
-       // path = allPaths[currIdx] ;
-    }
->>>>>>> 4a757f3f95f3c59f87018b9bcfdb7ab79fcc91f6
+
     private void Start()
     {
         effect = new EffectBuilder(this);
         CurrPathIdx = 0;
         startAnchor.a = endAnchor.a = anchor.a = handle.a = bezier.a = 1; // 투명도1로 고정
-        _deleteSensibilty = (path.points[0].position - path.points[1].position).magnitude;
+        
         loop = true;
     }
-    private void Update()
-    {
-        Debug.Log(allPaths.Count);
-    }
+
     public void CreatePath() // 패스나 커브를 사용할 오브젝트는 Init함수에서 이 함수를 실행시키면됨 (Utill.GetOrAddComponent())
     {
-        allPaths.Clear();
-<<<<<<< HEAD
-        selectedPath = new Paths(transform.position, 10f);
-        allPaths.Add(path);
-        //allPaths.Add(0,path);
-=======
+        pathsList.Clear();
         path = new Paths(transform.position, 10f);
-        allPaths.Add(allPaths.Count, path);
->>>>>>> 4a757f3f95f3c59f87018b9bcfdb7ab79fcc91f6
+        pathsList.Add(path);
     }
 
     public void AddNewPath(Vector2 mousePos) // 여러개의 패스를 사용할수있도록
     {
-        allPaths.Add(new Paths(mousePos));
+        pathsList.Add(new Paths(mousePos));
     }
     public void ChangeControlPathIDX(int idx) // 딕셔너리 키값에 각각 매핑된 개별 패스들중 인자 키번호껄로 접근
     {
-        selectedPath = allPaths[idx]; // 이제 선추가 점 생성등등 컨트롤을 idx번호 패스객체에서 하기로함
+        path = pathsList[idx]; // 이제 선추가 점 생성등등 컨트롤을 idx번호 패스객체에서 하기로함
     }
 
     public void DoMove()
@@ -112,7 +97,7 @@ public class PathCreator : MonoBehaviour  // 컴포넌트 역할, 점(Paths.cs)의 정보�
 
             }
             // 재생할 이벤트함수가 있다면 실행!
-           // if (p[3].effect.Count != 0) { p[3].Play(); }
+          //  if (p[3].effect != null) { p[3].effect.Execute(); }
 
             // 현재 이동이 무한반복상태인지 체크
             count = (loop == true) ? (count + 1) % path.NumSegment : count + 1;

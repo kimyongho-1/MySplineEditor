@@ -97,7 +97,13 @@ public class PathCreator : MonoBehaviour  // 컴포넌트 역할, 점(Paths.cs)의 정보�
 
             }
             // 재생할 이벤트함수가 있다면 실행!
-          //  if (p[3].effect != null) { p[3].effect.Execute(); }
+            if (p[3].Effect != null) 
+            {
+                for (int i = 0; i < p[3].Effect.Count; i++)
+                {
+                    p[3].Effect[i].Execute();
+                }
+            }
 
             // 현재 이동이 무한반복상태인지 체크
             count = (loop == true) ? (count + 1) % path.NumSegment : count + 1;

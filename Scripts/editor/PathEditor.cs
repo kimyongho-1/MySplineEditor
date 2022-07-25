@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-
+using Assets.Script.TweenLibrary;
 [CustomEditor(typeof(PathCreator))]
 public class PathEditor : Editor
 {
     PathCreator _creator;
     Paths _path;
-    GenericMenu menuMR,eventMR;
+    GenericMenu menuMR,eventMR,effectMR;
     Vector2 mousePos;
     bool showIdx = true;
     bool drawAll = false;
@@ -34,10 +34,12 @@ public class PathEditor : Editor
         menuMR.AddItem(new GUIContent("Alt+Z : UnDo"), false, Empty);
         eventMR = new GenericMenu();
         eventMR.AddItem(new GUIContent("취소"), false, Empty);
-        //eventMR.AddItem(new GUIContent("해당 중심점에 이벤트생성"), false, ); 팝업창으로 클릭한 중심점 정보볼수있게?
+        eventMR.AddItem(new GUIContent("해당 중심점에 이벤트생성"), false, scale); //팝업창으로 클릭한 중심점 정보볼수있게?
         // 후에 AddEffect함수실행
-    }
 
+    }
+    void scale()
+    { _path.isAnchorPointArea(mousePos).AddEffect = new MUI_Effect();  }
     private void OnSceneGUI()
     {
         Event gui = Event.current; // Event클래스는 GUI에서만 인식됨
@@ -45,7 +47,7 @@ public class PathEditor : Editor
         Input();
         DrawSetting();
         //Draw();
-        _path = _path = _creator.GetList[cacheIDX];// _creator.path; // 갈아끼우기
+        _path = _creator.GetList[cacheIDX];// _creator.path; // 갈아끼우기
         SceneView.RepaintAll(); // 씬에디터 화면 다시 그리기
     }
 
@@ -160,8 +162,7 @@ public class PathEditor : Editor
         _path.AddSegmentBetween(mousePos, selectedIdx);
 
     }
-    void AddEvent()
-    { }
+   
     void NoBezier() // 우클릭위치에서 가장 가까운 선분을 직선으로(두개의 핸들 정지) 
     {
         int selectedIdx = -1;

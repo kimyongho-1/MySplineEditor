@@ -55,8 +55,9 @@ public class PathWindowEditor : EditorWindow
         EditorGUILayout.BeginHorizontal();
         path.isExpanded = EditorGUILayout.Foldout(path.isExpanded, "Points Elements");
         EditorGUILayout.EndHorizontal();
-
-        
+        Debug.Log((pathsList.GetArrayElementAtIndex(_creator.CurrPathIdx)
+       .FindPropertyRelative("Points").GetArrayElementAtIndex(0).FindPropertyRelative("effect2").GetArrayElementAtIndex(0).FindPropertyRelative("pos")));
+    
         if (path.isExpanded)
         {
             
@@ -68,9 +69,20 @@ public class PathWindowEditor : EditorWindow
                 Vector2 pos = pointVec.vector2Value;
                 pos = EditorGUILayout.Vector2Field($"idx[{i}] Pos", pos);
                 pointVec.vector2Value = pos;
+                EditorGUILayout.PropertyField(pathsList.GetArrayElementAtIndex(_creator.CurrPathIdx)
+                .FindPropertyRelative("Points").GetArrayElementAtIndex(i).FindPropertyRelative("effect2"));
+                for (int k = 0; k < pathsList.GetArrayElementAtIndex(_creator.CurrPathIdx)
+                    .FindPropertyRelative("Points").GetArrayElementAtIndex(i).FindPropertyRelative("effect2").arraySize; k++)
+                {
+                    EditorGUILayout.PropertyField(pathsList.GetArrayElementAtIndex(_creator.CurrPathIdx)
+                    .FindPropertyRelative("Points").GetArrayElementAtIndex(i).FindPropertyRelative("effect2").GetArrayElementAtIndex(k).FindPropertyRelative("pos"));
+                    EditorGUILayout.PropertyField(pathsList.GetArrayElementAtIndex(_creator.CurrPathIdx)
+                        .FindPropertyRelative("Points").GetArrayElementAtIndex(i).FindPropertyRelative("effect2").GetArrayElementAtIndex(k).FindPropertyRelative("speed"));
+                }
+                
+
             }
 
-           
         }
 
     }

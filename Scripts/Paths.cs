@@ -7,7 +7,13 @@ public class Point //각 점
 {
     [SerializeField] Vector2 Position; //점의 위치
     public Vector2 position { get { return this.Position; } set { Position = value; } }
-    public Point(Vector2 pos) { position = pos;  }
+    [SerializeField] List<int> ini = new List<int>();
+    [SerializeField] List<Effect> effect2 = new List<Effect>(10);
+    [SerializeField] List<ScriptableObject> effect3 = new List<ScriptableObject>(10);
+    [SerializeField] List<MUI_Effect> effect = new List<MUI_Effect>(1);
+    public MUI_Effect AddEffect { set { effect.Add(value); } }
+    public List<MUI_Effect> Effect { get { return this.effect; } }
+    public Point(Vector2 pos) { position = pos; effect2.Add(new Effect(1)); effect2.Add(new Effect(2)); }
 }
 
 
@@ -123,7 +129,7 @@ public class Paths // 데이터(점) 역할, 각 점의 위치와, 점에 관련된 함수가 있음
         {
             // 목적 : 다음 인덱스가 중심점이라면,
             // 그 중심점에 연결된 핸들점에 반대 회전을 주어 막대기처럼 회전+이동을 시키게 유도
-            Debug.Log(isClosed);
+            
             if (isClosed == false && idx + 1 == points.Count - 1 ||
                 isClosed == false && idx - 1 == 0)
             { Debug.Log($"인덱스({idx}) : 반대편 핸들 없음"); return; }
@@ -211,7 +217,7 @@ public class Paths // 데이터(점) 역할, 각 점의 위치와, 점에 관련된 함수가 있음
     {
         for (int i = 0; i < points.Count; i+=3)
         {
-            if ((points[i].position - mousePos).magnitude < 3f) { return points[i]; }
+            if (Mathf.Abs((points[i].position - mousePos).magnitude) < 10f) { return points[i]; }
         }
         return null;
     }

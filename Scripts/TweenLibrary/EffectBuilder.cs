@@ -21,7 +21,7 @@ namespace Assets.Script.TweenLibrary
             _effectList.Add(ToAddEffect);
             return this;   // 반환값을 자신으로 한건 추가함과 재생도 동시에 할수있게 유도 (아래 Execute()함수로 바로 실행가능하게)
         }
-        public void Execute() // 위에  AddEffect로 생성후 .Execute()로 마지막에 추가한 이펙트 바로 재생유도
+        public  void Execute() // 위에  AddEffect로 생성후 .Execute()로 마지막에 추가한 이펙트 바로 재생유도
         {
             ExecuteSelectedEffect(_effectList.Count - 1);
             #region 사용예시 In anyUIscript.cs
